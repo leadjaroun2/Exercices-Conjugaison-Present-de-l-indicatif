@@ -61,12 +61,20 @@
             transition: width 0.4s ease;
         }
 
-        /* Zone Question */
+        /* Zone Question et Instructions */
         h1 {
             font-family: 'Playfair Display', serif;
             color: var(--primary);
             font-size: 28px;
-            margin: 0 0 20px 0;
+            margin: 0 0 10px 0;
+        }
+
+        .instruction-text {
+            font-size: 15px;
+            color: #475569;
+            font-style: italic;
+            margin-bottom: 20px;
+            font-weight: 500;
         }
 
         .question-box {
@@ -196,10 +204,11 @@
         </div>
 
         <h1>Le Présent de l'Indicatif</h1>
+        <div class="instruction-text" id="instruction-text">Choose the correct verb form for the blank space.</div>
         
         <div class="question-box">
             <div class="question-text" id="q-text">Chargement...</div>
-            <div class="translation-hint" id="q-trans" onclick="toggleTranslation()">👁 Afficher la traduction / Show translation</div>
+            <div class="translation-hint" id="q-trans" onclick="toggleTranslation()">👁 Show translation</div>
         </div>
 
         <div class="options-grid" id="options"></div>
@@ -216,53 +225,53 @@
 </div>
 
 <script>
-    // Banque de 40 questions sur les conjugaisons au présent (1er, 2e, 3e groupe)
+    // Banque de 40 questions sur les conjugaisons au présent
     const allQuestions = [
         // --- 1ER GROUPE (-ER) ---
-        { q: "Quelle est la bonne conjugaison ? Nous _______ (parler) français.", t: "We speak French.", o: ["parlons", "parlez", "parlent", "parles"], a: 0 },
-        { q: "Quelle est la bonne conjugaison ? J'_______ (habiter) à Paris.", t: "I live in Paris.", o: ["habite", "habites", "habitons", "habitez"], a: 0 },
-        { q: "Quelle est la bonne conjugaison ? Tu _______ (manger) une pomme.", t: "You are eating an apple.", o: ["manges", "mange", "mangeons", "mangez"], a: 0 },
-        { q: "Attention au radical : Nous _______ (commencer) la leçon.", t: "We are starting the lesson.", o: ["commençons", "commencons", "commencez", "commencent"], a: 0 },
-        { q: "Attention au radical : Nous _______ (manger) ensemble.", t: "We eat together.", o: ["mangeons", "mangons", "mangez", "mangent"], a: 0 },
-        { q: "Attention au radical : Ils _______ (appeler) le médecin.", t: "They are calling the doctor.", o: ["appellent", "appelent", "appelons", "appelez"], a: 0 },
-        { q: "Attention au radical : Je _______ (préférer) le café.", t: "I prefer coffee.", o: ["préfère", "preferre", "préfères", "préférons"], a: 0 },
-        { q: "Quelle est la bonne conjugaison ? Vous _______ (étudier) beaucoup.", t: "You study a lot.", o: ["étudiez", "étudies", "étudie", "étudient"], a: 0 },
-        { q: "Quelle est la bonne conjugaison ? Elles _______ (regarder) un film.", t: "They are watching a movie.", o: ["regardent", "regarde", "regardes", "regardez"], a: 0 },
-        { q: "Attention au radical : Tu _______ (payer) l'addition.", t: "You pay the bill.", o: ["paies", "payes", "paie", "payez"], a: 0 },
+        { q: "Nous _______ (parler) français.", inst: "Choose the correct conjugation for this 1st group verb (-ER):", t: "We speak French.", o: ["parlons", "parlez", "parlent", "parles"], a: 0 },
+        { q: "J'_______ (habiter) à Paris.", inst: "Choose the correct conjugation for this 1st group verb (-ER):", t: "I live in Paris.", o: ["habite", "habites", "habitons", "habitez"], a: 0 },
+        { q: "Tu _______ (manger) une pomme.", inst: "Choose the correct conjugation for this 1st group verb (-ER):", t: "You are eating an apple.", o: ["manges", "mange", "mangeons", "mangez"], a: 0 },
+        { q: "Nous _______ (commencer) la leçon.", inst: "Watch out for the stem spelling with 'Nous' (1st group):", t: "We are starting the lesson.", o: ["commençons", "commencons", "commencez", "commencent"], a: 0 },
+        { q: "Nous _______ (manger) ensemble.", inst: "Watch out for the stem spelling with 'Nous' (1st group):", t: "We eat together.", o: ["mangeons", "mangons", "mangez", "mangent"], a: 0 },
+        { q: "Ils _______ (appeler) le médecin.", inst: "Watch out for the double consonant in the stem (1st group):", t: "They are calling the doctor.", o: ["appellent", "appelent", "appelons", "appelez"], a: 0 },
+        { q: "Je _______ (préférer) le café.", inst: "Watch out for the accent change in the stem (1st group):", t: "I prefer coffee.", o: ["préfère", "preferre", "préfères", "préférons"], a: 0 },
+        { q: "Vous _______ (étudier) beaucoup.", inst: "Choose the correct conjugation for this 1st group verb (-ER):", t: "You study a lot.", o: ["étudiez", "étudies", "étudie", "étudient"], a: 0 },
+        { q: "Elles _______ (regarder) un film.", inst: "Choose the correct conjugation for this 1st group verb (-ER):", t: "They are watching a movie.", o: ["regardent", "regarde", "regardes", "regardez"], a: 0 },
+        { q: "Tu _______ (payer) l'addition.", inst: "Watch out for the optional vowel change Y to I (1st group):", t: "You pay the bill.", o: ["paies", "payes", "paie", "payez"], a: 0 },
 
         // --- 2E GROUPE (-IR en -issant) ---
-        { q: "Quelle est la bonne conjugaison ? Je _______ (finir) mes devoirs.", t: "I am finishing my homework.", o: ["finis", "finit", "finissons", "finissent"], a: 0 },
-        { q: "Quelle est la bonne conjugaison ? Vous _______ (choisir) un gâteau.", t: "You choose a cake.", o: ["choisissez", "choisissez", "choisit", "choisissent"], a: 0 },
-        { q: "Quelle est la bonne conjugaison ? Elle _______ (rougir) facilement.", t: "She blushes easily.", o: ["rougit", "rougis", "rougissent", "rougissons"], a: 0 },
-        { q: "Quelle est la bonne conjugaison ? Les enfants _______ (grandir) vite.", t: "Children grow up fast.", o: ["grandissent", "grandit", "grandis", "grandissez"], a: 0 },
-        { q: "Quelle est la bonne conjugaison ? Nous _______ (réussir) l'examen.", t: "We pass the exam.", o: ["réussissons", "réussissez", "réussit", "réussissent"], a: 0 },
-        { q: "Quelle est la bonne conjugaison ? Tu _______ (remplir) le verre.", t: "You fill the glass.", o: ["remplis", "remplit", "remplissez", "remplissons"], a: 0 },
-        { q: "Quelle est la bonne conjugaison ? Le joueur _______ (réagir) bien.", t: "The player reacts well.", o: ["réagit", "réagis", "réagissent", "réagissez"], a: 0 },
-        { q: "Quelle est la bonne conjugaison ? Vous _______ (réfléchir) à la question.", t: "You are thinking about the question.", o: ["réfléchissez", "réfléchit", "réfléchis", "réfléchissent"], a: 0 },
-        { q: "Quelle est la bonne conjugaison ? Nous _______ (punir) le comportement.", t: "We punish the behavior.", o: ["punissons", "punissez", "punit", "punissent"], a: 0 },
-        { q: "Quelle est la bonne conjugaison ? Ils _______ (obéir) aux règles.", t: "They obey the rules.", o: ["obéissent", "obéit", "obéissons", "obéissez"], a: 0 },
+        { q: "Je _______ (finir) mes devoirs.", inst: "Choose the correct conjugation for this 2nd group verb (-IR):", t: "I am finishing my homework.", o: ["finis", "finit", "finissons", "finissent"], a: 0 },
+        { q: "Vous _______ (choisir) un gâteau.", inst: "Choose the correct conjugation for this 2nd group verb (-IR):", t: "You choose a cake.", o: ["choisissez", "choisit", "choisissent", "choisissons"], a: 0 },
+        { q: "Elle _______ (rougir) facilement.", inst: "Choose the correct conjugation for this 2nd group verb (-IR):", t: "She blushes easily.", o: ["rougit", "rougis", "rougissent", "rougissons"], a: 0 },
+        { q: "Les enfants _______ (grandir) vite.", inst: "Choose the correct conjugation for this 2nd group verb (-IR):", t: "Children grow up fast.", o: ["grandissent", "grandit", "grandis", "grandissez"], a: 0 },
+        { q: "Nous _______ (réussir) l'examen.", inst: "Choose the correct conjugation for this 2nd group verb (-IR):", t: "We pass the exam.", o: ["réussissons", "réussissez", "réussit", "réussissent"], a: 0 },
+        { q: "Tu _______ (remplir) le verre.", inst: "Choose the correct conjugation for this 2nd group verb (-IR):", t: "You fill the glass.", o: ["remplis", "remplit", "remplissez", "remplissons"], a: 0 },
+        { q: "Le joueur _______ (réagir) bien.", inst: "Choose the correct conjugation for this 2nd group verb (-IR):", t: "The player reacts well.", o: ["réagit", "réagis", "réagissent", "réagissez"], a: 0 },
+        { q: "Vous _______ (réfléchir) à la question.", inst: "Choose the correct conjugation for this 2nd group verb (-IR):", t: "You are thinking about the question.", o: ["réfléchissez", "réfléchit", "réfléchis", "réfléchissent"], a: 0 },
+        { q: "Nous _______ (punir) le comportement.", inst: "Choose the correct conjugation for this 2nd group verb (-IR):", t: "We punish the behavior.", o: ["punissons", "punissez", "punit", "punissent"], a: 0 },
+        { q: "Ils _______ (obéir) aux règles.", inst: "Choose the correct conjugation for this 2nd group verb (-IR):", t: "They obey the rules.", o: ["obéissent", "obéit", "obéissons", "obéissez"], a: 0 },
 
         // --- 3E GROUPE (Irréguliers & Verbes plus avancés) ---
-        { q: "Verbe essentiel : Je _______ (être) fatigué aujourd'hui.", t: "I am tired today.", o: ["suis", "es", "est", "sommes"], a: 0 },
-        { q: "Verbe essentiel : Tu _______ (avoir) quel âge ?", t: "How old are you?", o: ["as", "ai", "a", "avez"], a: 0 },
-        { q: "Verbe du 1er groupe exceptionnel : Il _______ (aller) à la gare.", t: "He goes to the station.", o: ["va", "vais", "vont", "allez"], a: 0 },
-        { q: "Verbe irrégulier (Groupe 3) : Nous _______ (faire) du sport.", t: "We do sports.", o: ["faisons", "faites", "font", "fais"], a: 0 },
-        { q: "Verbe irrégulier (Groupe 3) : Vous _______ (dire) la vérité.", t: "You tell the truth.", o: ["dites", "disons", "disez", "disent"], a: 0 },
-        { q: "Verbe irrégulier (Groupe 3) : Ils _______ (prendre) le train.", t: "They take the train.", o: ["prennent", "prenent", "prend", "prenons"], a: 0 },
-        { q: "Verbe irrégulier (Groupe 3) : Tu _______ (pouvoir) m'aider ?", t: "Can you help me?", o: ["peux", "peut", "pouvons", "pouvez"], a: 0 },
-        { q: "Verbe irrégulier (Groupe 3) : Je _______ (vouloir) un café s'il vous plaît.", t: "I want a coffee please.", o: ["veux", "veut", "voulons", "veulent"], a: 0 },
-        { q: "Verbe irrégulier (Groupe 3) : Elle _______ (venir) demain.", t: "She is coming tomorrow.", o: ["vient", "viens", "venons", "viennent"], a: 0 },
-        { q: "Verbe avancé (Groupe 3) : Cet objet _______ (appartenir) au musée.", t: "This object belongs to the museum.", o: ["appartient", "appartiens", "appartiennent", "appartenons"], a: 0 },
-        { q: "Verbe avancé (Groupe 3) : Vous _______ (permettre) cette action ?", t: "Do you allow this action?", o: ["permettez", "permet", "permettons", "permettent"], a: 0 },
-        { q: "Verbe avancé (Groupe 3) : Ils _______ (comprendre) la leçon.", t: "They understand the lesson.", o: ["comprennent", "comprenent", "comprend", "comprenez"], a: 0 },
-        { q: "Verbe avancé (Groupe 3) : Tu _______ (promettre) d'arriver à l'heure ?", t: "Do you promise to arrive on time?", o: ["promets", "promet", "promettons", "promettez"], a: 0 },
-        { q: "Verbe avancé (Groupe 3) : Nous _______ (découvrir) une belle ville.", t: "We discover a beautiful city.", o: ["découvrons", "découvre", "découvrez", "découvrent"], a: 0 },
-        { q: "Verbe avancé (Groupe 3) : Je _______ (offrir) un cadeau à mon ami.", t: "I offer a gift to my friend.", o: ["offre", "offres", "offrons", "offrez"], a: 0 },
-        { q: "Verbe avancé (Groupe 3) : Les fleurs _______ (éclore) au printemps.", t: "Flowers bloom in spring.", o: ["éclosent", "éclôt", "éclosons", "éclos"], a: 0 },
-        { q: "Verbe avancé (Groupe 3) : Vous _______ (craindre) le froid ?", t: "Do you fear the cold?", o: ["craignez", "crains", "craint", "craignent"], a: 0 },
-        { q: "Verbe avancé (Groupe 3) : Nous _______ (résoudre) ce problème.", t: "We solve this problem.", o: ["résolvons", "résolvez", "résout", "résolvent"], a: 0 },
-        { q: "Verbe avancé (Groupe 3) : Il _______ (valoir) mieux partir maintenant.", t: "It is better to leave now.", o: ["vaut", "vaux", "valons", "valent"], a: 0 },
-        { q: "Verbe avancé (Groupe 3) : Tu _______ (lire) un roman intéressant.", t: "You are reading an interesting novel.", o: ["lis", "lit", "lisons", "lisez"], a: 0 }
+        { q: "Je _______ (être) fatigué aujourd'hui.", inst: "Conjugate this essential irregular verb (3rd group):", t: "I am tired today.", o: ["suis", "es", "est", "sommes"], a: 0 },
+        { q: "Tu _______ (avoir) quel âge ?", inst: "Conjugate this essential irregular verb (3rd group):", t: "How old are you?", o: ["as", "ai", "a", "avez"], a: 0 },
+        { q: "Il _______ (aller) à la gare.", inst: "Conjugate this irregular verb (an exception ending in -ER, 3rd group):", t: "He goes to the station.", o: ["va", "vais", "vont", "allez"], a: 0 },
+        { q: "Nous _______ (faire) du sport.", inst: "Conjugate this frequent irregular verb (3rd group):", t: "We do sports.", o: ["faisons", "faites", "font", "fais"], a: 0 },
+        { q: "Vous _______ (dire) la vérité.", inst: "Conjugate this frequent irregular verb (3rd group):", t: "You tell the truth.", o: ["dites", "disons", "disez", "disent"], a: 0 },
+        { q: "Ils _______ (prendre) le train.", inst: "Conjugate this irregular verb (3rd group):", t: "They take the train.", o: ["prennent", "prenent", "prend", "prenons"], a: 0 },
+        { q: "Tu _______ (pouvoir) m'aider ?", inst: "Conjugate this irregular modal verb (3rd group):", t: "Can you help me?", o: ["peux", "peut", "pouvons", "pouvez"], a: 0 },
+        { q: "Je _______ (vouloir) un café s'il vous plaît.", inst: "Conjugate this irregular modal verb (3rd group):", t: "I want a coffee please.", o: ["veux", "veut", "voulons", "veulent"], a: 0 },
+        { q: "Elle _______ (venir) demain.", inst: "Conjugate this irregular verb (3rd group):", t: "She is coming tomorrow.", o: ["vient", "viens", "venons", "viennent"], a: 0 },
+        { q: "Cet objet _______ (appartenir) au musée.", inst: "Conjugate this advanced verb belonging to the Venir/Tenir family (3rd group):", t: "This object belongs to the museum.", o: ["appartient", "appartiens", "appartiennent", "appartenons"], a: 0 },
+        { q: "Vous _______ (permettre) cette action ?", inst: "Conjugate this advanced verb belonging to the Mettre family (3rd group):", t: "Do you allow this action?", o: ["permettez", "permet", "permettons", "permettent"], a: 0 },
+        { q: "Ils _______ (comprendre) la leçon.", inst: "Conjugate this advanced verb belonging to the Prendre family (3rd group):", t: "They understand the lesson.", o: ["comprennent", "comprenent", "comprend", "comprenez"], a: 0 },
+        { q: "Tu _______ (promettre) d'arriver à l'heure ?", inst: "Conjugate this advanced verb belonging to the Mettre family (3rd group):", t: "Do you promise to arrive on time?", o: ["promets", "promet", "promettons", "promettez"], a: 0 },
+        { q: "Nous _______ (découvrir) une belle ville.", inst: "Conjugate this advanced verb belonging to the Ouvrir/Offrir family (3rd group):", t: "We discover a beautiful city.", o: ["découvrons", "découvre", "découvrez", "découvrent"], a: 0 },
+        { q: "Je _______ (offrir) un cadeau à mon ami.", inst: "Conjugate this irregular verb (3rd group):", t: "I offer a gift to my friend.", o: ["offre", "offres", "offrons", "offrez"], a: 0 },
+        { q: "Les fleurs _______ (éclore) au printemps.", inst: "Conjugate this advanced irregular verb (3rd group):", t: "Flowers bloom in spring.", o: ["éclosent", "éclôt", "éclosons", "éclos"], a: 0 },
+        { q: "Vous _______ (craindre) le froid ?", inst: "Conjugate this advanced irregular verb (3rd group):", t: "Do you fear the cold?", o: ["craignez", "crains", "craint", "craignent"], a: 0 },
+        { q: "Nous _______ (résoudre) ce problème.", inst: "Conjugate this advanced irregular verb (3rd group):", t: "We solve this problem.", o: ["résolvons", "résolvez", "résout", "résolvent"], a: 0 },
+        { q: "Il _______ (valoir) mieux partir maintenant.", inst: "Conjugate this advanced irregular verb (3rd group):", t: "It is better to leave now.", o: ["vaut", "vaux", "valons", "valent"], a: 0 },
+        { q: "Tu _______ (lire) un roman intéressant.", inst: "Conjugate this irregular verb (3rd group):", t: "You are reading an interesting novel.", o: ["lis", "lit", "lisons", "lisez"], a: 0 }
     ];
 
     let quizQuestions = [];
@@ -280,7 +289,6 @@
     function initQuiz() {
         let pool = JSON.parse(JSON.stringify(allQuestions));
         shuffleArray(pool); 
-        // Sélectionne un mélange de 20 questions parmi les 40 disponibles
         quizQuestions = pool.slice(0, 20); 
         currentIdx = 0;
         score = 0;
@@ -289,11 +297,13 @@
 
     function loadQ() {
         const qData = quizQuestions[currentIdx];
+        
+        // Change l'instruction au-dessus du bloc de la question en anglais
+        document.getElementById('instruction-text').innerText = qData.inst;
         document.getElementById('q-text').innerText = qData.q;
         
-        // Réinitialise l'état de la traduction cliquable
         translationVisible = false;
-        document.getElementById('q-trans').innerText = "👁 Afficher la traduction / Show translation";
+        document.getElementById('q-trans').innerText = "👁 Show translation";
         document.getElementById('q-trans').style.color = "#64748B";
 
         document.getElementById('q-count').innerText = `Question ${currentIdx + 1}/20`;
@@ -330,7 +340,7 @@
             transElement.style.color = "var(--accent)";
             translationVisible = true;
         } else {
-            transElement.innerText = "👁 Afficher la traduction / Show translation";
+            transElement.innerText = "👁 Show translation";
             transElement.style.color = "#64748B";
             translationVisible = false;
         }
@@ -343,7 +353,6 @@
         const f = document.getElementById('feedback');
         f.style.display = 'block';
 
-        // Force l'affichage de la traduction pour aider l'élève après sa réponse
         const qData = quizQuestions[currentIdx];
         document.getElementById('q-trans').innerText = `Meaning: "${qData.t}"`;
         document.getElementById('q-trans').style.color = "var(--accent)";
